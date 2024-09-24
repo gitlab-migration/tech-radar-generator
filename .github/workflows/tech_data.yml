@@ -1,0 +1,38 @@
+name: Tech Data Extractor
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 1'  # Run every Monday
+
+jobs:
+  tech-data-job:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Run Tech Data Extractor
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        python tech_data_extractor.py
+
+    - name: Upload JSON File
+      uses: actions/upload-artifact@v2
+      with:
+        name: tech_data.json
+        path: tech_data.json
