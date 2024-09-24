@@ -5,18 +5,24 @@ import os
 # GitHub Personal Access Token (needed for authenticated API requests)
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 GITHUB_API_URL = "https://api.github.com"
-
-# List of repositories to scan
-REPOS = [
-    "owner/repo1",
-    "owner/repo2"
-]
+ORG_NAME = "gitlab-migration"  # Replace with your organization name
 
 # Headers for authenticated GitHub API requests
 HEADERS = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json"
 }
+
+# Function to list all repositories in the organization
+def list_org_repos():
+    repos = []
+    url = f"{GITHUB_API_URL}/orgs/{ORG_NAME}/repos"
+    response = requests.get(url, headers=HEADERS)
+    if response.status_code == 200:
+        repos = [repo['full_name'] for repo in response.json()]
+    else:
+        print(f"Error fetching repos: {response.status_code}")
+    return repos
 
 # Function to get the languages used in a repository
 def get_languages(repo):
@@ -41,7 +47,8 @@ def get_dependencies(repo):
 # Main function to extract technology data
 def extract_tech_data():
     tech_data = []
-    for repo in REPOS:
+    repos = list_org_repos()
+    for repo in repos:
         languages = get_languages(repo)
         dependencies = get_dependencies(repo)
         tech_data.append({
