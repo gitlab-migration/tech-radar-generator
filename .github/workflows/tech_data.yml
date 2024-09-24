@@ -32,7 +32,7 @@ jobs:
         python tech_data_extractor.py
 
     - name: Upload JSON File
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: tech_data.json
         path: tech_data.json
